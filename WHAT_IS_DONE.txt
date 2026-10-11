@@ -1,0 +1,114 @@
+================================================================================
+DIGITAL STUDENT GRIEVANCE & FEEDBACK PORTAL - WHAT IS DONE
+================================================================================
+
+1. PROJECT OVERVIEW
+-------------------
+A complete, functional college web application built for a college lab activity.
+It provides a centralized platform for students to lodge academic and facility
+grievances, track their resolution status in real time, and submit campus feedback,
+while allowing administrators to review, assign, update, and resolve submissions.
+
+Strictly follows the required academic stack:
+- Frontend: HTML5, CSS3, Vanilla JavaScript (Modern Navy/Teal responsive design)
+- Backend: Java Servlets (MVC Pattern, Jakarta Servlet API)
+- Database Connectivity: JDBC with PreparedStatements
+- Database: MySQL (Normalized relational schema)
+- Server: Apache Tomcat 10.1
+- Build Tool: Apache Maven (Compiled cleanly into a WAR file)
+* NO external frameworks used (No Spring Boot, Hibernate, React, Angular, etc.)
+
+
+2. DATABASE IMPLEMENTATION (MySQL: student_grievance_portal)
+-----------------------------------------------------------
+Two SQL scripts have been created in the "sql/" folder:
+- sql/schema.sql:
+  * "users" table: Stores students and administrators with secure password hashes,
+    salts, roles (STUDENT, ADMIN), departments, and roll numbers.
+  * "grievances" table: Stores tracking ID (e.g., GRV-2026-0001), student reference,
+    title, category, priority, department, description, status, admin response,
+    and resolver reference.
+  * "grievance_timeline" table: Complete audit trail recording status changes,
+    timestamps, and remarks for full transparency.
+  * "feedback" table: Stores student reviews, facility categories, comments,
+    and 1-to-5 star ratings.
+  * Constraints, Foreign Keys (CASCADE/SET NULL), and database indexes included.
+
+- sql/sample_data.sql:
+  * Pre-seeded with ready-to-test demonstration accounts:
+    - 1 Administrator account
+    - 2 Student accounts
+    - 5 Sample grievances with varied statuses (Submitted, Under Review, In Progress,
+      Resolved, Rejected) and realistic college scenarios.
+    - 4 Campus facility feedback submissions with ratings.
+
+
+3. BACKEND JAVA ARCHITECTURE (MVC PATTERN)
+------------------------------------------
+- Models (POJOs):
+  * User.java: User profile, role flags, getters/setters.
+  * Grievance.java: Grievance data and UI badge helpers.
+  * GrievanceTimeline.java: Audit history entries.
+  * Feedback.java: Feedback and star rating representations.
+  * DashboardStats.java: Aggregated counts, resolution rates, category distributions.
+
+- Data Access Objects (JDBC):
+  * UserDAO.java: Authentication, registration, duplicate checks, profile & password updates.
+  * GrievanceDAO.java: Insertions, multi-criteria filtering, timeline tracking,
+    transactional status updates, student & admin dashboard analytics.
+  * FeedbackDAO.java: Submissions, student history, admin filtering, star ratings distribution.
+
+- Controllers (Servlets):
+  * AuthServlet.java: Student login, admin login, registration, secure session creation, logout.
+  * StudentDashboardServlet.java: Loads personal metrics and recent grievances.
+  * AdminDashboardServlet.java: Loads executive metrics, category breakdowns, and rating stats.
+  * GrievanceServlet.java: Handles grievance submissions, filtering, detail views,
+    ownership checks, and administrative status updates.
+  * FeedbackServlet.java: Handles facility reviews and administrative review lists.
+  * ProfileServlet.java: Profile updates and password changes.
+
+- Security Filters & Utilities:
+  * DatabaseUtil.java: Configurable JDBC connection manager reading from db.properties.
+  * PasswordUtil.java: Salted SHA-256 password hashing.
+  * CSRFUtil.java: Synchronizer anti-CSRF tokens for all state-changing forms.
+  * ValidationUtil.java: Server-side validation, sanitization, and XSS escaping.
+  * AuthenticationFilter.java: Session and role verification protecting /student/*,
+    /admin/*, and /profile endpoints. Prevents cross-student data access.
+  * EncodingFilter.java: Enforces UTF-8 character encoding and security headers.
+
+
+4. USER INTERFACE & PAGES IMPLEMENTED
+-------------------------------------
+All pages feature a modern collegiate Navy Blue (#0e2a47) and Teal (#0284c7) theme:
+
+1. Landing Page (index.jsp): Hero banner, portal highlights, workflow guide, quick logins.
+2. Student Registration Page (register.jsp): Real-time client & server validation.
+3. Student Login Page (login.jsp): Student authentication with viva credential hints.
+4. Administrator Login Page (admin-login.jsp): Dedicated secure administrative portal.
+5. Student Dashboard (WEB-INF/views/student/dashboard.jsp): Metric cards, recent activity.
+6. Submit Grievance Page (WEB-INF/views/student/submit-grievance.jsp): Form with category,
+   priority, department, and helpful guidelines.
+7. My Grievances Page (WEB-INF/views/student/my-grievances.jsp): Searchable, filterable list.
+8. Grievance Details & Tracking (WEB-INF/views/student/grievance-details.jsp): Visual
+   resolution timeline, official admin response card, and admin update controls.
+9. Submit Feedback Page (WEB-INF/views/student/submit-feedback.jsp): Interactive 1-to-5 star
+   rating widget with category selection.
+10. My Feedback Page (WEB-INF/views/student/my-feedback.jsp): Personal review history.
+11. Administrator Dashboard (WEB-INF/views/admin/dashboard.jsp): Summary metrics,
+    pure CSS category distribution charts, and satisfaction breakdown.
+12. Manage Grievances Page (WEB-INF/views/admin/manage-grievances.jsp): Search and filter
+    with a status update modal.
+13. Manage Feedback Page (WEB-INF/views/admin/manage-feedback.jsp): Filter by category/stars.
+14. User Profile Page (WEB-INF/views/profile.jsp): Contact updates and password change.
+15. Error Pages (403.jsp, 404.jsp, 500.jsp): Clean custom error pages with troubleshooting.
+
+
+5. TESTING & VERIFICATION COMPLETED
+-----------------------------------
+- Maven Build: Compiled with Java 17 and packaged successfully into "student-grievance-portal.war".
+- Tomcat 10.1: Deployed, started, and verified responding with HTTP 200 OK.
+- Security verified: Unauthenticated requests to /student/dashboard and /admin/dashboard
+  automatically redirect to the appropriate login page.
+- 1-Click batch scripts created: "start-portal.bat" and "stop-portal.bat".
+- Server is currently STOPPED and port 8080 is verified free.
+================================================================================
